@@ -10,13 +10,6 @@ configure do
   set :allow_methods, [:get, :post, :options, :delete, :put, :patch]
   enable :cross_origin
 
-  # Set database adapter
-  if ENV['RACK_ENV'] == 'development'
-    set :database, {adapter: 'sqlite3', database: 'test.sqlite3'}
-  else
-    set :database, {adapter: 'postgresql', database: ENV['DATABASE_URL']}
-  end
-
   # Load model
   require './models/todo'
 end
