@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sinatra'
 require 'rack/contrib'
 require 'sinatra/activerecord'
@@ -7,16 +9,16 @@ use Rack::PostBodyContentTypeParser
 
 configure do
   set :allow_origin, :any
-  set :allow_methods, [:get, :post, :options, :delete, :put, :patch]
+  set :allow_methods, %i[get post options delete put patch]
   enable :cross_origin
 
   # Load model
   require './models/todo'
 end
 
-options "*" do
-  response.headers["Allow"] = "HEAD,GET,PUT,POST,OPTIONS,DELETE,PATCH"
-  response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
+options '*' do
+  response.headers['Allow'] = 'HEAD,GET,PUT,POST,OPTIONS,DELETE,PATCH'
+  response.headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept'
 end
 
 before { content_type :json }
@@ -58,7 +60,6 @@ put('/todos/?')    { err 405, 'You cannot modify the collection directly' }
 patch('/todos/?')  { err 405, 'You cannot modify the collection directly' }
 delete('/todos/?') { err 405, 'You cannot delete the collection' }
 
-
 # Object Actions
 
 get '/todos/:id/?' do |id|
@@ -73,9 +74,9 @@ put '/todos/:id/?' do |id|
     err 422, 'You must include all fields for a PUT: `title`, `due` and `notes` must be present'
   end
 
-  todo.title = params['title']             if params.has_key?('title')
-  todo.due   = parse_date(params['due'])   if params.has_key?('due')
-  todo.notes = params['notes']             if params.has_key?('notes')
+  todo.title = params['title']             if params.key?('title')
+  todo.due   = parse_date(params['due'])   if params.key?('due')
+  todo.notes = params['notes']             if params.key?('notes')
 
   if todo.save!
     todo.to_json
@@ -87,9 +88,9 @@ end
 patch '/todos/:id/?' do |id|
   todo = get_todo(id)
 
-  todo.title = params['title']             if params.has_key?('title')
-  todo.due   = parse_date(params['due'])   if params.has_key?('due')
-  todo.notes = params['notes']             if params.has_key?('notes')
+  todo.title = params['title']             if params.key?('title')
+  todo.due   = parse_date(params['due'])   if params.key?('due')
+  todo.notes = params['notes']             if params.key?('notes')
 
   if todo.save!
     todo.to_json
@@ -111,7 +112,7 @@ post('/todos/:id/?') { err 405, 'You cannot POST to this object' }
 private
 
 def err(code, message)
-  body({error_message: message.to_s}.to_json)
+  body({ error_message: message.to_s }.to_json)
   halt code.to_i
 end
 
