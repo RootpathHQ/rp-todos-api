@@ -107,9 +107,9 @@ put '/todos/:id(.:format)?' do |id, _format|
   # Throw error if not all fields are present
   err 422, 'You must include all fields for a PUT: `title`, `due` and `notes` must be present' unless params['title'] && params['due'] && params.key?('notes')
 
-  todo.title = params['title']             if params.key?('title')
-  todo.due   = parse_date(params['due'])   if params.key?('due')
-  todo.notes = params['notes']             if params.key?('notes')
+  todo.title = params['title']
+  todo.due   = parse_date(params['due'])
+  todo.notes = params['notes']
 
   if todo.save
     todo.to_json
