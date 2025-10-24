@@ -44,7 +44,30 @@ post '/todos/?' do
   notes = params['notes'] || ''
 
   if title && due
-    todo = Todo.new title: title, due: parse_date(due), notes: notes
+    # Easter egg: return 418 I'm a Teapot for educational purposes
+    if title.downcase.include?('teapot')
+      teapot_art = <<~TEAPOT
+              ;,'
+          _o_    ;--,
+         ( o ) __|  _)
+          '--`(___/
+      TEAPOT
+
+      response.headers['X-Teapot'] = 'Short and stout'
+      body({
+        error_message: "I'm a teapot and I refuse to brew coffee. Learn more: https://en.wikipedia.org/wiki/Hyper_Text_Coffee_Pot_Control_Protocol",
+        teapot: teapot_art
+      }.to_json)
+      halt 418
+    end
+
+    # Check for duplicate todo (same title and due date)
+    parsed_due = parse_date(due)
+    if Todo.exists?(title: title, due: parsed_due)
+      err 409, 'A todo with this title and due date already exists'
+    end
+
+    todo = Todo.new title: title, due: parsed_due, notes: notes
     if todo.save!
       status 201
       todo.to_json
