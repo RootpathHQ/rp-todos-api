@@ -5,7 +5,7 @@ require 'rack/contrib'
 require 'sinatra/activerecord'
 require 'json'
 
-use Rack::PostBodyContentTypeParser
+use Rack::JSONBodyParser
 
 configure do
   set :allow_origin, :any

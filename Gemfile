@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 source "https://rubygems.org"
-ruby '2.7.0'
+ruby '3.4.7'
 
 gem 'rake'
 gem 'rack-contrib'
@@ -9,6 +9,8 @@ gem 'sinatra-cross_origin'
 gem 'json'
 gem 'activerecord'
 gem 'sinatra-activerecord'
+gem 'rackup'
+gem 'puma'
 
 gem 'pg', group: :production
 
