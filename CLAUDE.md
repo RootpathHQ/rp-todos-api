@@ -41,6 +41,22 @@ http DELETE http://localhost:4567/todos/1
 
 **Keep it minimal and simple.** Always choose the simplest solution that achieves the goal. This is a teaching tool, not a production app.
 
+## Testing Workflow
+
+**After completing any task, always run the tests to ensure nothing is broken.**
+
+The dev server must be running in a separate terminal window for tests to work. If you get a connection error:
+- DO NOT start the dev server yourself
+- Ask the user to run the dev server command in another terminal window:
+  ```bash
+  RACK_ENV=development rerun --pattern '{**/*.rb,**/*.ru,Gemfile,Gemfile.lock,Rakefile}' ruby app.rb
+  ```
+
+Then run the tests:
+```bash
+bundle exec rspec
+```
+
 ## API Endpoints
 
 - `GET /todos` - List all todos

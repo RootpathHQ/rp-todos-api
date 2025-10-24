@@ -3,6 +3,7 @@
 require 'sinatra'
 require 'rack/contrib'
 require 'sinatra/activerecord'
+require 'activemodel-serializers-xml'
 require 'json'
 
 use Rack::JSONBodyParser
@@ -21,7 +22,17 @@ options '*' do
   response.headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept'
 end
 
-before { content_type :json }
+before do
+  # Set content type based on format from request path
+  case request.path_info
+  when /\.xml$/
+    content_type :xml
+  when /\.md$/
+    content_type 'text/markdown'
+  else
+    content_type :json
+  end
+end
 
 after do
   response.headers['Message-For-Tyler'] = 'Bish bosh bash'
@@ -33,8 +44,10 @@ end
 
 # Collection Actions
 
-get '/todos/?' do
-  Todo.select(:id, :title).to_json
+get '/todos(.:format)?' do
+  format = params[:format]
+  todos = (format.nil? || format == 'json') ? Todo.select(:id, :title) : Todo.all
+  render_response(todos, format)
 end
 
 # Accepts title, due and notes as querystring, form-data or JSON body
@@ -79,17 +92,17 @@ post '/todos/?' do
   end
 end
 
-put('/todos/?')    { err 405, 'You cannot modify the collection directly' }
-patch('/todos/?')  { err 405, 'You cannot modify the collection directly' }
-delete('/todos/?') { err 405, 'You cannot delete the collection' }
+put('/todos(.:format)?')    { err 405, 'You cannot modify the collection directly' }
+patch('/todos(.:format)?')  { err 405, 'You cannot modify the collection directly' }
+delete('/todos(.:format)?') { err 405, 'You cannot delete the collection' }
 
 # Object Actions
 
-get '/todos/:id/?' do |id|
-  get_todo(id).to_json
+get '/todos/:id(.:format)?' do |id, format|
+  render_response(get_todo(id), format)
 end
 
-put '/todos/:id/?' do |id|
+put '/todos/:id(.:format)?' do |id, format|
   todo = get_todo(id)
 
   # Throw error if not all fields are present
@@ -108,7 +121,7 @@ put '/todos/:id/?' do |id|
   end
 end
 
-patch '/todos/:id/?' do |id|
+patch '/todos/:id(.:format)?' do |id, format|
   todo = get_todo(id)
 
   todo.title = params['title']             if params.key?('title')
@@ -122,7 +135,7 @@ patch '/todos/:id/?' do |id|
   end
 end
 
-delete '/todos/:id/?' do |id|
+delete '/todos/:id(.:format)?' do |id, format|
   if get_todo(id).destroy
     halt 204
   else
@@ -130,9 +143,42 @@ delete '/todos/:id/?' do |id|
   end
 end
 
-post('/todos/:id/?') { err 405, 'You cannot POST to this object' }
+post('/todos/:id(.:format)?') { err 405, 'You cannot POST to this object' }
 
 private
+
+def render_response(data, format = nil)
+  format ||= params[:format] || 'json'
+
+  case format
+  when 'xml'
+    data.to_xml
+  when 'md', 'markdown'
+    render_markdown(data)
+  else
+    data.to_json
+  end
+end
+
+def render_markdown(data)
+  # Check if it's a collection (Array or ActiveRecord::Relation) vs a single record
+  if data.is_a?(ActiveRecord::Relation) || data.is_a?(Array)
+    # Collection of todos
+    markdown = "# Todos\n\n"
+    data.each do |todo|
+      markdown += "- [#{todo.id}] #{todo.title}\n"
+    end
+    markdown
+  else
+    # Single todo
+    markdown = "# #{data.title}\n\n"
+    markdown += "**Due:** #{data.due}\n"
+    markdown += "**Notes:** #{data.notes}\n" if data.respond_to?(:notes) && !data.notes.empty?
+    markdown += "\n**Created:** #{data.created_at}\n" if data.respond_to?(:created_at)
+    markdown += "**Updated:** #{data.updated_at}\n" if data.respond_to?(:updated_at)
+    markdown
+  end
+end
 
 def err(code, message)
   body({ error_message: message.to_s }.to_json)
