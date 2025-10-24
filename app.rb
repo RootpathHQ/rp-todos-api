@@ -79,11 +79,12 @@ post '/todos/?' do
     err 409, 'A todo with this title and due date already exists' if Todo.exists?(title: title, due: parsed_due)
 
     todo = Todo.new title: title, due: parsed_due, notes: notes
-    if todo.save!
+    if todo.save
       status 201
       todo.to_json
     else
-      err 500, 'Todo could not be saved in the database'
+      # Validation failed - return helpful error message
+      err 422, "Validation failed: #{todo.errors.full_messages.join(', ')}"
     end
   else
     err 422, 'You must provide `title` and `due` as a) QueryString parameters, b) form-data or c) JSON in the request body. The choice is yours.'
@@ -110,10 +111,11 @@ put '/todos/:id(.:format)?' do |id, _format|
   todo.due   = parse_date(params['due'])   if params.key?('due')
   todo.notes = params['notes']             if params.key?('notes')
 
-  if todo.save!
+  if todo.save
     todo.to_json
   else
-    err 500, 'Todo could not be updated in the database'
+    # Validation failed - return helpful error message
+    err 422, "Validation failed: #{todo.errors.full_messages.join(', ')}"
   end
 end
 
@@ -124,10 +126,11 @@ patch '/todos/:id(.:format)?' do |id, _format|
   todo.due   = parse_date(params['due'])   if params.key?('due')
   todo.notes = params['notes']             if params.key?('notes')
 
-  if todo.save!
+  if todo.save
     todo.to_json
   else
-    err 500, 'Todo could not be updated in the database'
+    # Validation failed - return helpful error message
+    err 422, "Validation failed: #{todo.errors.full_messages.join(', ')}"
   end
 end
 
