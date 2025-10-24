@@ -23,6 +23,10 @@ end
 
 before { content_type :json }
 
+after do
+  response.headers['Message-For-Tyler'] = 'Bish bosh bash'
+end
+
 get '/' do
   err 404, 'Route does not exist'
 end
