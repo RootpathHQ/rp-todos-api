@@ -30,11 +30,7 @@ end
 # Collection Actions
 
 get '/todos/?' do
-  if Todo.count > 0
-    Todo.select(:id, :title).to_json
-  else
-    err 400, 'There are no todos yet'
-  end
+  Todo.select(:id, :title).to_json
 end
 
 # Accepts title, due and notes as querystring, form-data or JSON body
@@ -119,7 +115,7 @@ end
 def parse_date(date)
   Date.parse date
 rescue ArgumentError => e
-  err 422, 'Due Date must be and ISO 8601 String: YYYY-MM-DD'
+  err 422, 'Due Date must be an ISO 8601 String: YYYY-MM-DD'
 end
 
 def get_todo(id)
