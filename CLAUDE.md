@@ -76,6 +76,16 @@ bundle exec rspec
 - `PUT /todos/:id` - Full update (all fields required)
 - `DELETE /todos/:id` - Delete todo
 
+## Database Management
+
+```bash
+# Clear all todos
+rake db:clear
+
+# Seed database with sample todos
+rake db:seed
+```
+
 ## Testing
 
 ```bash
@@ -83,11 +93,4 @@ bundle exec rspec
 rake            # or
 rake spec       # or
 bundle exec rspec
-```
-
-## Database Management
-
-```bash
-# Reset/clear all todos
-ruby scripts/reset_db.rb
 ```

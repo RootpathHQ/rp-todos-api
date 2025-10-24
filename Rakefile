@@ -9,6 +9,11 @@ namespace :db do
   task :load_config do
     require './app'
   end
+
+  desc 'Clear all todos from database'
+  task :clear do
+    ruby 'scripts/reset_db.rb'
+  end
 end
 
 # Test task

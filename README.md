@@ -48,6 +48,16 @@ http DELETE http://localhost:4567/todos/1
 - `PUT /todos/:id` - Full update (all fields required)
 - `DELETE /todos/:id` - Delete todo
 
+## Database Management
+
+```bash
+# Clear all todos
+rake db:clear
+
+# Seed database with sample todos
+rake db:seed
+```
+
 ## Testing
 
 ```bash
