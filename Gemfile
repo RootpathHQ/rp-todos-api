@@ -19,4 +19,6 @@ group :test, :development do
   gem 'pry'
   gem 'awesome_print'
   gem 'rspec'
+  gem 'httparty'
+  gem 'rerun'
 end

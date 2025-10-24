@@ -1,4 +1,6 @@
-require './app'
+require 'httparty'
+require 'json'
+
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
@@ -8,3 +10,6 @@ RSpec.configure do |config|
   end
   config.shared_context_metadata_behavior = :apply_to_host_groups
 end
+
+# Base URL for API tests - defaults to localhost:4567
+API_BASE_URL = ENV.fetch('API_BASE_URL', 'http://localhost:4567')

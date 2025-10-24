@@ -1,8 +1,10 @@
-# Rootpath Todos API
+# To-Dos API Teaching Project
 
-This project is used for teaching students about JSON, HTTP and Restful APIs.
+Simple Sinatra REST API for teaching HTTP concepts: methods, response codes, headers, and JSON.
 
-To run locally:
+## Running the App
+
+Run the server in a separate terminal window:
 
 ```bash
 bundle
@@ -55,4 +57,11 @@ http DELETE http://localhost:4567/todos/1
 rake            # or
 rake spec       # or
 bundle exec rspec
+```
+
+## Database Management
+
+```bash
+# Reset/clear all todos
+ruby scripts/reset_db.rb
 ```

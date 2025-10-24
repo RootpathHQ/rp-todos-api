@@ -70,7 +70,7 @@ put '/todos/:id/?' do |id|
   todo = get_todo(id)
 
   # Throw error if not all fields are present
-  unless params['title'] && parse_date(params['due']) && params['notes']
+  unless params['title'] && params['due'] && params.key?('notes')
     err 422, 'You must include all fields for a PUT: `title`, `due` and `notes` must be present'
   end
 
