@@ -56,3 +56,14 @@ rake            # or
 rake spec       # or
 bundle exec rspec
 ```
+
+## Code Quality
+
+```bash
+# Run RuboCop to check for code issues
+rake rubocop            # or
+bundle exec rubocop
+
+# Auto-fix issues where possible
+bundle exec rubocop -A
+```

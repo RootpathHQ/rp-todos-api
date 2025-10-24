@@ -14,7 +14,7 @@ require 'date'
 
 $stdout.sync = true
 # Keep reading lines of input as long as they're coming.
-while input = ARGF.gets
+while (input = ARGF.gets)
   input.each_line do |line|
     parts = line.split
     next unless parts.size == 13

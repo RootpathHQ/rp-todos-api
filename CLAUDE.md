@@ -43,7 +43,7 @@ http DELETE http://localhost:4567/todos/1
 
 ## Testing Workflow
 
-**After completing any task, always run the tests to ensure nothing is broken.**
+**After completing any task, always run RuboCop and then tests to ensure nothing is broken.**
 
 The dev server must be running in a separate terminal window for tests to work. If you get a connection error:
 - DO NOT start the dev server yourself
@@ -52,7 +52,17 @@ The dev server must be running in a separate terminal window for tests to work. 
   RACK_ENV=development rerun --pattern '{**/*.rb,**/*.ru,Gemfile,Gemfile.lock,Rakefile}' ruby app.rb
   ```
 
-Then run the tests:
+Then run RuboCop to check for code quality issues:
+```bash
+bundle exec rubocop
+```
+
+If RuboCop finds issues, auto-fix them if possible:
+```bash
+bundle exec rubocop -A
+```
+
+Finally, run the tests:
 ```bash
 bundle exec rspec
 ```

@@ -46,7 +46,7 @@ end
 
 get '/todos(.:format)?' do
   format = params[:format]
-  todos = (format.nil? || format == 'json') ? Todo.select(:id, :title) : Todo.all
+  todos = format.nil? || format == 'json' ? Todo.select(:id, :title) : Todo.all
   render_response(todos, format)
 end
 
@@ -60,10 +60,10 @@ post '/todos/?' do
     # Easter egg: return 418 I'm a Teapot for educational purposes
     if title.downcase.include?('teapot')
       teapot_art = <<~TEAPOT
-              ;,'
-          _o_    ;--,
-         ( o ) __|  _)
-          '--`(___/
+             ;,'
+         _o_    ;--,
+        ( o ) __|  _)
+         '--`(___/
       TEAPOT
 
       response.headers['X-Teapot'] = 'Short and stout'
@@ -76,9 +76,7 @@ post '/todos/?' do
 
     # Check for duplicate todo (same title and due date)
     parsed_due = parse_date(due)
-    if Todo.exists?(title: title, due: parsed_due)
-      err 409, 'A todo with this title and due date already exists'
-    end
+    err 409, 'A todo with this title and due date already exists' if Todo.exists?(title: title, due: parsed_due)
 
     todo = Todo.new title: title, due: parsed_due, notes: notes
     if todo.save!
@@ -102,13 +100,11 @@ get '/todos/:id(.:format)?' do |id, format|
   render_response(get_todo(id), format)
 end
 
-put '/todos/:id(.:format)?' do |id, format|
+put '/todos/:id(.:format)?' do |id, _format|
   todo = get_todo(id)
 
   # Throw error if not all fields are present
-  unless params['title'] && params['due'] && params.key?('notes')
-    err 422, 'You must include all fields for a PUT: `title`, `due` and `notes` must be present'
-  end
+  err 422, 'You must include all fields for a PUT: `title`, `due` and `notes` must be present' unless params['title'] && params['due'] && params.key?('notes')
 
   todo.title = params['title']             if params.key?('title')
   todo.due   = parse_date(params['due'])   if params.key?('due')
@@ -121,7 +117,7 @@ put '/todos/:id(.:format)?' do |id, format|
   end
 end
 
-patch '/todos/:id(.:format)?' do |id, format|
+patch '/todos/:id(.:format)?' do |id, _format|
   todo = get_todo(id)
 
   todo.title = params['title']             if params.key?('title')
@@ -135,7 +131,7 @@ patch '/todos/:id(.:format)?' do |id, format|
   end
 end
 
-delete '/todos/:id(.:format)?' do |id, format|
+delete '/todos/:id(.:format)?' do |id, _format|
   if get_todo(id).destroy
     halt 204
   else
@@ -144,8 +140,6 @@ delete '/todos/:id(.:format)?' do |id, format|
 end
 
 post('/todos/:id(.:format)?') { err 405, 'You cannot POST to this object' }
-
-private
 
 def render_response(data, format = nil)
   format ||= params[:format] || 'json'
@@ -187,12 +181,12 @@ end
 
 def parse_date(date)
   Date.parse date
-rescue ArgumentError => e
+rescue ArgumentError
   err 422, 'Due Date must be an ISO 8601 String: YYYY-MM-DD'
 end
 
 def get_todo(id)
   Todo.find(id)
-rescue ActiveRecord::RecordNotFound => e
+rescue ActiveRecord::RecordNotFound
   err 404, 'Todo item not found'
 end

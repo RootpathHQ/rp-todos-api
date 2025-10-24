@@ -3,6 +3,7 @@
 # Rakefile
 require 'sinatra/activerecord/rake'
 require 'rspec/core/rake_task'
+require 'rubocop/rake_task'
 
 namespace :db do
   task :load_config do
@@ -12,6 +13,9 @@ end
 
 # Test task
 RSpec::Core::RakeTask.new(:spec)
+
+# Rubocop task
+RuboCop::RakeTask.new
 
 task default: :spec
 task test: :spec

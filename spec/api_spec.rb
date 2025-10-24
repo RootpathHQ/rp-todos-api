@@ -36,9 +36,8 @@ RSpec.describe 'Todos API' do
     it 'returns todos in Markdown format when .md extension is used' do
       # Create a todo first so we have something to list
       HTTParty.post("#{base_url}/todos",
-        body: { title: 'Markdown Test', due: '2025-12-31' }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                    body: { title: 'Markdown Test', due: '2025-12-31' }.to_json,
+                    headers: { 'Content-Type' => 'application/json' })
 
       response = HTTParty.get("#{base_url}/todos.md")
 
@@ -52,13 +51,12 @@ RSpec.describe 'Todos API' do
   describe 'POST /todos' do
     it 'creates a new todo' do
       response = HTTParty.post("#{base_url}/todos",
-        body: {
-          title: 'Test Todo',
-          due: '2025-12-31',
-          notes: 'Test notes'
-        }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                               body: {
+                                 title: 'Test Todo',
+                                 due: '2025-12-31',
+                                 notes: 'Test notes'
+                               }.to_json,
+                               headers: { 'Content-Type' => 'application/json' })
 
       expect(response.code).to eq(201)
 
@@ -71,9 +69,8 @@ RSpec.describe 'Todos API' do
 
     it 'returns 418 I\'m a Teapot when title contains "teapot"' do
       response = HTTParty.post("#{base_url}/todos",
-        body: { title: 'Buy a teapot', due: '2025-12-31' }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                               body: { title: 'Buy a teapot', due: '2025-12-31' }.to_json,
+                               headers: { 'Content-Type' => 'application/json' })
 
       expect(response.code).to eq(418)
 
@@ -89,15 +86,13 @@ RSpec.describe 'Todos API' do
     it 'returns 409 Conflict when creating duplicate todo' do
       # Create first todo
       HTTParty.post("#{base_url}/todos",
-        body: { title: 'Duplicate Test', due: '2025-12-31' }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                    body: { title: 'Duplicate Test', due: '2025-12-31' }.to_json,
+                    headers: { 'Content-Type' => 'application/json' })
 
       # Try to create duplicate
       response = HTTParty.post("#{base_url}/todos",
-        body: { title: 'Duplicate Test', due: '2025-12-31' }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                               body: { title: 'Duplicate Test', due: '2025-12-31' }.to_json,
+                               headers: { 'Content-Type' => 'application/json' })
 
       expect(response.code).to eq(409)
       expect(JSON.parse(response.body)['error_message']).to include('already exists')
@@ -108,9 +103,8 @@ RSpec.describe 'Todos API' do
     it 'returns a single todo' do
       # Create a todo first
       create_response = HTTParty.post("#{base_url}/todos",
-        body: { title: 'Get Me', due: '2025-12-31' }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                                      body: { title: 'Get Me', due: '2025-12-31' }.to_json,
+                                      headers: { 'Content-Type' => 'application/json' })
       todo_id = JSON.parse(create_response.body)['id']
 
       # Get the todo
@@ -126,9 +120,8 @@ RSpec.describe 'Todos API' do
     it 'returns todo in XML format when .xml extension is used' do
       # Create a todo first
       create_response = HTTParty.post("#{base_url}/todos",
-        body: { title: 'XML Test', due: '2025-12-31' }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                                      body: { title: 'XML Test', due: '2025-12-31' }.to_json,
+                                      headers: { 'Content-Type' => 'application/json' })
       todo_id = JSON.parse(create_response.body)['id']
 
       response = HTTParty.get("#{base_url}/todos/#{todo_id}.xml")
@@ -142,13 +135,12 @@ RSpec.describe 'Todos API' do
     it 'returns todo in Markdown format when .md extension is used' do
       # Create a todo first
       create_response = HTTParty.post("#{base_url}/todos",
-        body: {
-          title: 'Markdown Single Test',
-          due: '2025-12-31',
-          notes: 'Some notes here'
-        }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                                      body: {
+                                        title: 'Markdown Single Test',
+                                        due: '2025-12-31',
+                                        notes: 'Some notes here'
+                                      }.to_json,
+                                      headers: { 'Content-Type' => 'application/json' })
       todo_id = JSON.parse(create_response.body)['id']
 
       response = HTTParty.get("#{base_url}/todos/#{todo_id}.md")
@@ -165,16 +157,14 @@ RSpec.describe 'Todos API' do
     it 'partially updates a todo' do
       # Create a todo first
       create_response = HTTParty.post("#{base_url}/todos",
-        body: { title: 'Original', due: '2025-12-31' }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                                      body: { title: 'Original', due: '2025-12-31' }.to_json,
+                                      headers: { 'Content-Type' => 'application/json' })
       todo_id = JSON.parse(create_response.body)['id']
 
       # Update just the notes
       response = HTTParty.patch("#{base_url}/todos/#{todo_id}",
-        body: { notes: 'Updated notes' }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                                body: { notes: 'Updated notes' }.to_json,
+                                headers: { 'Content-Type' => 'application/json' })
 
       expect(response.code).to eq(200)
 
@@ -188,20 +178,18 @@ RSpec.describe 'Todos API' do
     it 'fully updates a todo' do
       # Create a todo first
       create_response = HTTParty.post("#{base_url}/todos",
-        body: { title: 'Original PUT Test', due: '2025-11-30' }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                                      body: { title: 'Original PUT Test', due: '2025-11-30' }.to_json,
+                                      headers: { 'Content-Type' => 'application/json' })
       todo_id = JSON.parse(create_response.body)['id']
 
       # Full update
       response = HTTParty.put("#{base_url}/todos/#{todo_id}",
-        body: {
-          title: 'Updated Title',
-          due: '2026-01-01',
-          notes: 'New notes'
-        }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                              body: {
+                                title: 'Updated Title',
+                                due: '2026-01-01',
+                                notes: 'New notes'
+                              }.to_json,
+                              headers: { 'Content-Type' => 'application/json' })
 
       expect(response.code).to eq(200)
 
@@ -216,9 +204,8 @@ RSpec.describe 'Todos API' do
     it 'deletes a todo' do
       # Create a todo first
       create_response = HTTParty.post("#{base_url}/todos",
-        body: { title: 'Delete Me', due: '2025-12-31' }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+                                      body: { title: 'Delete Me', due: '2025-12-31' }.to_json,
+                                      headers: { 'Content-Type' => 'application/json' })
       todo_id = JSON.parse(create_response.body)['id']
 
       # Delete it
@@ -258,9 +245,8 @@ RSpec.describe 'Todos API' do
 
       it 'returns 404 when updating non-existent todo' do
         response = HTTParty.patch("#{base_url}/todos/99999",
-          body: { title: 'Updated' }.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+                                  body: { title: 'Updated' }.to_json,
+                                  headers: { 'Content-Type' => 'application/json' })
 
         expect(response.code).to eq(404)
       end
@@ -275,9 +261,8 @@ RSpec.describe 'Todos API' do
     describe '422 errors' do
       it 'returns 422 when creating todo without title' do
         response = HTTParty.post("#{base_url}/todos",
-          body: { due: '2025-12-31' }.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+                                 body: { due: '2025-12-31' }.to_json,
+                                 headers: { 'Content-Type' => 'application/json' })
 
         expect(response.code).to eq(422)
         expect(JSON.parse(response.body)['error_message']).to include('title')
@@ -285,9 +270,8 @@ RSpec.describe 'Todos API' do
 
       it 'returns 422 when creating todo without due date' do
         response = HTTParty.post("#{base_url}/todos",
-          body: { title: 'Test' }.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+                                 body: { title: 'Test' }.to_json,
+                                 headers: { 'Content-Type' => 'application/json' })
 
         expect(response.code).to eq(422)
         expect(JSON.parse(response.body)['error_message']).to include('due')
@@ -295,9 +279,8 @@ RSpec.describe 'Todos API' do
 
       it 'returns 422 when creating todo with invalid date format' do
         response = HTTParty.post("#{base_url}/todos",
-          body: { title: 'Test', due: 'not-a-date' }.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+                                 body: { title: 'Test', due: 'not-a-date' }.to_json,
+                                 headers: { 'Content-Type' => 'application/json' })
 
         expect(response.code).to eq(422)
         expect(JSON.parse(response.body)['error_message']).to include('ISO 8601')
@@ -306,16 +289,14 @@ RSpec.describe 'Todos API' do
       it 'returns 422 when PUT without all required fields' do
         # Create a todo first
         create_response = HTTParty.post("#{base_url}/todos",
-          body: { title: 'Test', due: '2025-12-31' }.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+                                        body: { title: 'Test', due: '2025-12-31' }.to_json,
+                                        headers: { 'Content-Type' => 'application/json' })
         todo_id = JSON.parse(create_response.body)['id']
 
         # Try PUT with missing fields
         response = HTTParty.put("#{base_url}/todos/#{todo_id}",
-          body: { title: 'Updated' }.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+                                body: { title: 'Updated' }.to_json,
+                                headers: { 'Content-Type' => 'application/json' })
 
         expect(response.code).to eq(422)
         expect(JSON.parse(response.body)['error_message']).to include('all fields')
@@ -350,9 +331,8 @@ RSpec.describe 'Todos API' do
       it 'returns 405 for POST /todos/:id' do
         # Create a todo first
         create_response = HTTParty.post("#{base_url}/todos",
-          body: { title: 'Test', due: '2025-12-31' }.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+                                        body: { title: 'Test', due: '2025-12-31' }.to_json,
+                                        headers: { 'Content-Type' => 'application/json' })
         todo_id = JSON.parse(create_response.body)['id']
 
         response = HTTParty.post("#{base_url}/todos/#{todo_id}")
@@ -369,15 +349,13 @@ RSpec.describe 'Todos API' do
       it 'prevents duplicate todos with same title and due date' do
         # Create first todo
         HTTParty.post("#{base_url}/todos",
-          body: { title: 'Unique Conflict Test', due: '2025-11-15' }.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+                      body: { title: 'Unique Conflict Test', due: '2025-11-15' }.to_json,
+                      headers: { 'Content-Type' => 'application/json' })
 
         # Attempt duplicate
         response = HTTParty.post("#{base_url}/todos",
-          body: { title: 'Unique Conflict Test', due: '2025-11-15' }.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+                                 body: { title: 'Unique Conflict Test', due: '2025-11-15' }.to_json,
+                                 headers: { 'Content-Type' => 'application/json' })
 
         expect(response.code).to eq(409)
         expect(JSON.parse(response.body)['error_message']).to include('already exists')
@@ -386,15 +364,13 @@ RSpec.describe 'Todos API' do
       it 'allows duplicate title with different due date' do
         # Create first todo
         HTTParty.post("#{base_url}/todos",
-          body: { title: 'Same Title', due: '2025-11-15' }.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+                      body: { title: 'Same Title', due: '2025-11-15' }.to_json,
+                      headers: { 'Content-Type' => 'application/json' })
 
         # Create with same title but different due date - should succeed
         response = HTTParty.post("#{base_url}/todos",
-          body: { title: 'Same Title', due: '2025-11-16' }.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+                                 body: { title: 'Same Title', due: '2025-11-16' }.to_json,
+                                 headers: { 'Content-Type' => 'application/json' })
 
         expect(response.code).to eq(201)
       end
@@ -406,9 +382,8 @@ RSpec.describe 'Todos API' do
 
         variations.each do |title|
           response = HTTParty.post("#{base_url}/todos",
-            body: { title: title, due: '2025-12-31' }.to_json,
-            headers: { 'Content-Type' => 'application/json' }
-          )
+                                   body: { title: title, due: '2025-12-31' }.to_json,
+                                   headers: { 'Content-Type' => 'application/json' })
 
           expect(response.code).to eq(418)
           body = JSON.parse(response.body)
