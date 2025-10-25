@@ -11,7 +11,6 @@ use Rack::JSONBodyParser
 configure do
   set :port, ENV['PORT'] || 4567
   set :bind, '0.0.0.0'
-  set :host_authorization, { permitted_hosts: [] }
   set :allow_origin, :any
   set :allow_methods, %i[get post options delete put patch]
   enable :cross_origin
