@@ -14,6 +14,16 @@ namespace :db do
   task :clear do
     ruby 'scripts/reset_db.rb'
   end
+
+  desc 'Reset and seed database (for deployments: set SEED_DB=true)'
+  task :reset_and_seed do
+    if ENV['SEED_DB'] == 'true'
+      Rake::Task['db:seed'].invoke
+      puts 'Database reset and seeded!'
+    else
+      puts 'Skipping seed (set SEED_DB=true to run)'
+    end
+  end
 end
 
 # Test task
